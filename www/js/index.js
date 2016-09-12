@@ -15,8 +15,9 @@
 /* global ble, statusDiv, temperature  */
 /* jshint browser: true , devel: true*/
 
-// See BLE heart rate service http://goo.gl/wKH3X7
-var heartRate = {
+// See BLE health thermometer service
+// https://www.bluetooth.com/specifications/gatt/viewer?attributeXmlFile=org.bluetooth.service.health_thermometer.xml
+var healthThermometer = {
     service: '1809',
     measurement: '2a1c'
 };
@@ -32,14 +33,14 @@ var app = {
         app.scan();
     },
     scan: function() {
-        app.status("Scanning for Heart Rate Monitor");
+        app.status("Scanning for Health Thermometer");
 
-        var foundHeartRateMonitor = false;
+        var foundThermometer = false;
 
         function onScan(peripheral) {
-            // this is demo code, assume there is only one heart rate monitor
+            // this is demo code, assume there is only one thermometer
             console.log("Found " + JSON.stringify(peripheral));
-            foundHeartRateMonitor = true;
+            foundThermometer = true;
 
             ble.connect(peripheral.id, app.onConnect, app.onDisconnect);
         }
@@ -48,17 +49,17 @@ var app = {
             alert("BLE Scan Failed");
         }
 
-        ble.scan([heartRate.service], 5, onScan, scanFailure);
+        ble.scan([healthThermometer.service], 5, onScan, scanFailure);
 
         setTimeout(function() {
-            if (!foundHeartRateMonitor) {
-                app.status("Did not find a heart rate monitor.");
+            if (!foundThermometer) {
+                app.status("Could not find a health thermometer.");
             }
         }, 5000);
     },
     onConnect: function(peripheral) {
         app.status("Connected to " + peripheral.id);
-        ble.startNotification(peripheral.id, heartRate.service, heartRate.measurement, app.onData, app.onError);
+        ble.startNotification(peripheral.id, healthThermometer.service, healthThermometer.measurement, app.onData, app.onError);
     },
     onDisconnect: function(reason) {
         alert("Disconnected " + reason);
@@ -68,7 +69,7 @@ var app = {
     onData: function(buffer) {
         // need to decode the measurement based on the 0x2a1c specs
         // https://www.bluetooth.com/specifications/gatt/viewer?attributeXmlFile=org.bluetooth.characteristic.temperature_measurement.xml
-        // assume byte 0 is flags and byte 1 is a temperature
+        // hack: assume byte 0 is flags and byte 1 is a temperature
         var data = new Uint8Array(buffer);
         temperature.innerHTML = data[1];
     },
