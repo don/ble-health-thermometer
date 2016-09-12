@@ -1,4 +1,4 @@
-BLE Heart Rate Demo
+BLE Health Thermometer Demo
 
 Connects to a peripherial providing the [Health Thermometer Service](https://www.bluetooth.com/specifications/gatt/viewer?attributeXmlFile=org.bluetooth.service.health_thermometer.xml).
 
