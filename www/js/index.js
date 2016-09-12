@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/* global ble, statusDiv, beatsPerMinute */
+/* global ble, statusDiv, temperature  */
 /* jshint browser: true , devel: true*/
 
 // See BLE heart rate service http://goo.gl/wKH3X7
 var heartRate = {
-    service: '180d',
-    measurement: '2a37'
+    service: '1809',
+    measurement: '2a1c'
 };
 
 var app = {
@@ -62,14 +62,15 @@ var app = {
     },
     onDisconnect: function(reason) {
         alert("Disconnected " + reason);
-        beatsPerMinute.innerHTML = "...";
+        temperature.innerHTML = "...";
         app.status("Disconnected");
     },
     onData: function(buffer) {
-        // assuming heart rate measurement is Uint8 format, real code should check the flags
-        // See the characteristic specs http://goo.gl/N7S5ZS
+        // need to decode the measurement based on the 0x2a1c specs
+        // https://www.bluetooth.com/specifications/gatt/viewer?attributeXmlFile=org.bluetooth.characteristic.temperature_measurement.xml
+        // assume byte 0 is flags and byte 1 is a temperature
         var data = new Uint8Array(buffer);
-        beatsPerMinute.innerHTML = data[1];
+        temperature.innerHTML = data[1];
     },
     onError: function(reason) {
         alert("There was an error " + reason);
