@@ -49,13 +49,13 @@ var app = {
             alert("BLE Scan Failed");
         }
 
-        ble.scan([healthThermometer.service], 5, onScan, scanFailure);
+        ble.scan([healthThermometer.service], 60, onScan, scanFailure);
 
         setTimeout(function() {
             if (!foundThermometer) {
                 app.status("Could not find a health thermometer.");
             }
-        }, 5000);
+        }, 60000); // this timeout should match BLE scan
     },
     onConnect: function(peripheral) {
         app.status("Connected to " + peripheral.id);
